@@ -8,7 +8,15 @@
 #    Description:   百分比形式显示频繁使用的shell命令
 # ====================================================
 
-history | \
-awk '{map[$4]++;} END {for (cmd in map) printf "%d %f%% %s\n", map[cmd], map[cmd]/NR*100, cmd;}' | \
-grep -v './' | \
-column -s' ' -t | sort -nr | nl | head -n10
+function history_stats() {
+    local entries=${1:-10}
+    fc -l 1 \
+        | awk '{map[$4]++;} END {for (cmd in map) printf "%d %f%% %s\n", map[cmd], map[cmd]/NR*100, cmd;}' \
+        | grep -v './' \
+        | column -c3 -s ' ' -t \
+        | sort -nr \
+        | nl \
+        | head -n "$entries"
+}
+
+history_stats "$@"
