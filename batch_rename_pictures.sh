@@ -13,24 +13,26 @@ path="${1:-.}"
 rename_pics() {
     shopt -s nullglob
 
-    declare -i i=1
+    declare -i cnt=1
 
     # 防止在重命名过程中导致名字冲突
-    for pic in "$path"/*.{jpg,png}; do
+    for pic in *.{jpg,png}; do
         if [ -f "$pic" ]; then
             ext="${pic##*.}"
-            mv $pic "${pic%/*}/"$(printf "%08d" $i)".$ext"
-            i+=1
+            printf -v new_name "%09d.%s" $cnt $ext
+            mv $pic $new_name
+            cnt+=1
         fi
     done
 
-    i=1
+    cnt=1
 
-    for pic in "$path"/*.{jpg,png}; do
+    for pic in *.{jpg,png}; do
         if [ -f "$pic" ]; then
             ext="${pic##*.}"
-            mv $pic "${pic%/*}/"$(printf "%02d" $i)".$ext"
-            i+=1
+            printf -v new_name "%02d.%s" $cnt $ext
+            mv $pic $new_name
+            cnt+=1
         fi
     done
 
@@ -48,7 +50,7 @@ generate_md() {
 }
 
 main() {
-    rename_pics
+    (cd $path && rename_pics)
 }
 
 main
